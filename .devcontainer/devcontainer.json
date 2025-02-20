@@ -12,5 +12,8 @@
         "oven.bun-vscode"
       ]
     }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {}
   }
 }
