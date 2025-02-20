@@ -8,11 +8,14 @@ import type { Bot } from "@/types/Bot";
 import type { BotConfig } from "@/config/botConfig";
 
 export class BotInstance {
+  public readonly username!: string;
   public readonly bot!: Bot;
   private commands: Map<string, BaseCommand> = new Map();
   private eventListeners: Map<string, BaseEvent[]> = new Map();
 
   constructor(config: BotConfig) {
+    this.username = config.username;
+
     this.bot = mineflayer.createBot({
       host: config.host,
       port: config.port,
@@ -27,11 +30,12 @@ export class BotInstance {
 
     // Attach a reference to this BotInstance so events can access it.
     this.bot.botInstance = this;
+
+    Logger.log(`Bot '${config.username}' has been initialized.`);
   }
 
   public registerCommand(command: BaseCommand): void {
-    this.commands.set(command.name, command);
-    Logger.register(`Registered command: ${command.name}`);
+    this.commands.set(command.name, command);  
   }
 
   public registerEvent(event: BaseEvent): void {
@@ -44,7 +48,6 @@ export class BotInstance {
         .run(this.bot, ...args)
         .catch((err) => Logger.error(`Error in event ${event.name}:`, err));
     });
-    Logger.register(`Registered event listener: ${event.name}`);
   }
 
   public getCommand(commandName: string): BaseCommand | undefined {
