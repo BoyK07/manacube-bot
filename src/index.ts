@@ -1,10 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
 
-import Logger from "@/logger/Logger";
+import Logger from "@/utils/Logger";
 import { BotManager } from "@/bots/BotManager";
 import { accounts } from "@/config/accounts";
-import { registerCommands } from "@/commands/registerCommands";
-import { registerEvents } from "@/events/registerEvents";
+import { loadCommands, loadEvents } from "@/utils/moduleLoader";
 
 import type { BotConfig } from "@/config/botConfig";
 import type { BotInstance } from "@/bots/BotInstance";
@@ -22,9 +21,9 @@ async function initializeBot(account: BotConfig): Promise<BotInstance> {
   });
 
   try {
-    await registerCommands(botInstance).catch(err => Logger.error("Error registering commands:", err));
+    await loadCommands(botInstance).catch(err => Logger.error("Error loading commands:", err));
 
-    await registerEvents(botInstance).catch(err => Logger.error("Error registering events:", err));
+    await loadEvents(botInstance).catch(err => Logger.error("Error loading events:", err));
 
     // Wait for the bot to spawn before continuing
     await spawnPromise;

@@ -1,17 +1,19 @@
 import mineflayer from "mineflayer";
+import type { BotEvents } from "mineflayer";
 
-import Logger from "@/logger/Logger";
-import { BaseCommand } from "@/commands/BaseCommand";
-import { BaseEvent } from "@/events/BaseEvent";
+import Logger from "@/utils/Logger";
+import { BaseCommand } from "@/core/BaseCommand";
+import { BaseEvent } from "@/core/BaseEvent";
 
 import type { Bot } from "@/types/Bot";
 import type { BotConfig } from "@/config/botConfig";
+import { loadCommands, loadEvents } from "@/utils/moduleLoader";
 
 export class BotInstance {
   public readonly username!: string;
   public readonly bot!: Bot;
   private commands: Map<string, BaseCommand> = new Map();
-  private eventListeners: Map<string, BaseEvent[]> = new Map();
+  private eventListeners: Map<keyof BotEvents, BaseEvent[]> = new Map();
 
   constructor(config: BotConfig) {
     this.username = config.username;
@@ -43,14 +45,40 @@ export class BotInstance {
       this.eventListeners.set(event.name, []);
     }
     this.eventListeners.get(event.name)!.push(event);
-    this.bot.on(event.name as any, (...args: any[]) => {
+    
+    // Type-safe event registration
+    this.bot.on(event.name, (...args: Parameters<BotEvents[typeof event.name]>) => {
       event
         .run(this.bot, ...args)
         .catch((err) => Logger.error(`Error in event ${event.name}:`, err));
     });
   }
 
+  public getCommands(): Map<string, BaseCommand> {
+    return this.commands
+  }
+
   public getCommand(commandName: string): BaseCommand | undefined {
     return this.commands.get(commandName);
+  }
+
+  public clearCommands(): void {
+    this.commands.clear();
+  }
+
+  public clearEvents(): void {
+    // Remove all existing event listeners
+    for (const [eventName, events] of this.eventListeners.entries()) {
+      events.forEach(() => {
+        this.bot.removeAllListeners(eventName);
+      });
+    }
+    this.eventListeners.clear();
+  }
+
+  public async reloadModules(): Promise<void> {
+    await loadCommands(this);
+    await loadEvents(this);
+    Logger.log("All modules reloaded successfully");
   }
 }

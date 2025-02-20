@@ -1,7 +1,7 @@
 import type { Bot } from "@/types/Bot";
 
-import { BaseEvent } from "@/events/BaseEvent";
-import Logger from "@/logger/Logger";
+import { BaseEvent } from "@/core/BaseEvent";
+import Logger from "@/utils/Logger";
 
 export class SpawnEvent extends BaseEvent {
   constructor() {

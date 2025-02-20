@@ -1,6 +1,5 @@
-import { BaseEvent } from "@/events/BaseEvent";
-import Logger from "@/logger/Logger";
-import { BotInstance } from "@/bots/BotInstance";
+import { BaseEvent } from "@/core/BaseEvent";
+import Logger from "@/utils/Logger";
 
 import type { Bot } from "@/types/Bot";
 
