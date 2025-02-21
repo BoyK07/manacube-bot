@@ -66,6 +66,14 @@ export class BotInstance {
     this.commands.clear();
   }
 
+  public getEvents(): Map<keyof BotEvents, BaseEvent[]> {
+    return this.eventListeners;
+  }
+
+  public getEvent(eventName: keyof BotEvents): BaseEvent[] | undefined {
+    return this.eventListeners.get(eventName);
+  }
+
   public clearEvents(): void {
     // Remove all existing event listeners
     for (const [eventName, events] of this.eventListeners.entries()) {
