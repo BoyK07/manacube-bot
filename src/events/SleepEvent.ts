@@ -13,58 +13,43 @@ export class SleepEvent extends BaseEvent {
     super("actionBar");
   }
 
-  async run(bot: Bot, jsonMsg: ChatMessage): Promise<void> {
-    // if (jsonMsg.translate != "sleep.players_sleeping") return;
+  async run(bot: Bot, jsonMsg: any): Promise<void> {
+    if (jsonMsg.translate != "sleep.players_sleeping") return;
+    if (bot.isSleeping) return;
+    if (bot.game.dimension != "overworld") return;
 
-    // const closestBed = bot.findBlocks({
-    //   // matching: 26, // Minecraft bed ID
-    //   matching: block => bot.isABed(block),
-    //   maxDistance: 10,
-    //   // count: 1,
-    // });
+    // Sleep for 0.5 seconds due to occupation of bed having a slight delay
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Logger.debug(closestBed);
-
-    // const bed = bot.findBlock({
-    //   matching: (block) => bot.isABed(block),
-    // });
-    // if (bed) {
-    //   try {
-    //     await bot.sleep(bed);
-    //     bot.chat("I'm sleeping");
-    //   } catch (err: any) {
-    //     bot.chat(`I can't sleep: ${err.message}`);
-    //   }
-    // } else {
-    //   bot.chat("No nearby bed");
-    // }
-
-    const allFoundBlocks: Block[] = []
+    const beds = bot.findBlocks({
+      matching: (block) => bot.isABed(block),
+      count: Object.keys(bot.players).length + 1, // +1 for safety
+      maxDistance: 4.5
+    });
     
-    const blocks = bot.findBlocks({
-      matching: block => {
-        if (block.type === 0) {
-          return false;
-        }
-        allFoundBlocks.push(block);
-        return bot.isABed(block);
-      },
-      useExtraInfo: true,
-      maxDistance: 2,
-    })
+    if (beds.length === 0) {
+      this.leaveSleep();
+      return;
+    }
 
-    fs.writeFileSync("blocks.json", JSON.stringify(allFoundBlocks, null, 2));
+    for (const _bed of beds) {
+      const bed = bot.blockAt(_bed);
+      if (!bed) continue;
+
+      try {
+        await bot.sleep(bed);
+        if (bot.isSleeping) {
+          break;
+        }
+      } catch (err: any) {
+        Logger.error(err);
+        this.leaveSleep();
+      }
+      break;
+    }  
   }
 
-
-  // if (closestBed) {
-  //   try {
-  //     await bot.sleep(closestBed)
-  //     bot.chat("I'm sleeping now!")
-  //   } catch (err: any) {
-  //     bot.chat(`I can't sleep: ${err.message}`)
-  //   }
-  // } else {
-  //   bot.chat('No nearby bed found!')
-  // }
+  private leaveSleep() {
+    //TODO: Bot leaves for x seconds
+  }
 }
