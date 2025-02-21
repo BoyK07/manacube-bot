@@ -22,7 +22,7 @@ export class BotInstance {
       host: config.host,
       port: config.port,
       username: config.username,
-      // version: config.version,
+      version: config.version,
       respawn: config.respawn,
 
       auth: "microsoft",
