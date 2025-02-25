@@ -7,7 +7,7 @@ export class EvalCommand extends BaseCommand {
   constructor() {
     super("eval", {
       description: "Executes commands or triggers events",
-      usage: "eval <type> <name> [...args]"
+      usage: "eval <type> <name> [...args]",
     });
   }
 
@@ -20,24 +20,43 @@ export class EvalCommand extends BaseCommand {
     const [type, name, ...restArgs] = args;
 
     try {
-      if (type.toLowerCase() === 'event') {
-        // Get registered events from the bot instance
-        const registeredEvents = Array.from(bot.botInstance.getEvents().keys());
-        
-        // Validate if the event exists in BotEvents
-        if (!registeredEvents.includes(name as keyof BotEvents)) {
-          bot.chat(`Event '${name}' not found. Available events: ${registeredEvents.join(', ')}`);
-          return;
-        }
+      switch (type.toLowerCase()) {
+        case "command":
+          throw new Error("Command execution is not supported yet");
 
-        // Type assertion to any to bypass type checking for emitted events
-        // This is necessary because different events expect different argument types
-        (bot.emit as any)(name, ...restArgs);
-        
-        bot.chat(`Successfully triggered event: ${name}`);
-        Logger.log(`Manually triggered event: ${name} with args:`, restArgs);
-      } else {
-        bot.chat('Currently only event triggering is supported. Use: /eval event <eventName> [...args]');
+          break;
+        case "event": {
+          // Get registered events from the bot instance
+          const registeredEvents = Array.from(
+            bot.botInstance.getEvents().keys()
+          );
+
+          // Type assertion for name to ensure it's a valid BotEvent key
+          const eventName = name as keyof BotEvents;
+
+          // Validate if the event exists in BotEvents
+          if (!registeredEvents.includes(eventName)) {
+            bot.chat(
+              `Event '${name}' not found. Available events: ${registeredEvents.join(", ")}`
+            );
+            return;
+          }
+
+
+          // Now eventName is properly typed as keyof BotEvents
+          bot.emit(eventName, ...restArgs);
+
+          Logger.log(`Manually triggered event: ${eventName} with args:`, restArgs);
+          bot.chat(`Successfully triggered event: ${eventName}`);
+
+          break;
+        }
+        default:
+          bot.chat(
+            "Currently only event triggering is supported. Use: /eval event <eventName> [...args]"
+          );
+
+          break;
       }
     } catch (err) {
       Logger.error(`Eval error:`, err);
