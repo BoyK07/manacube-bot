@@ -29,7 +29,7 @@ export class BotInstance {
       hideErrors: true,
       
       onMsaCode(data) {
-        Logger.warn(`Please login to Microsoft at: ${data.verification_uri}?link=${data.user_code}`);
+        Logger.warn(`Please login to Microsoft at: ${data.verification_uri}?otc=${data.user_code}`);
       },
       disableChatSigning: true,
     }) as Bot;
