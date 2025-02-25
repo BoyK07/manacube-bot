@@ -17,7 +17,7 @@ export class BotInstance {
 
   constructor(config: BotConfig) {
     this.username = config.username;
-
+    
     this.bot = mineflayer.createBot({
       host: config.host,
       port: config.port,
@@ -27,6 +27,10 @@ export class BotInstance {
 
       auth: "microsoft",
       hideErrors: true,
+      
+      onMsaCode(data) {
+        Logger.warn(`Please login to Microsoft at: ${data.verification_uri}?link=${data.user_code}`);
+      },
       disableChatSigning: true,
     }) as Bot;
 
