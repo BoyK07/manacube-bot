@@ -41,7 +41,10 @@ async function initializeBots() {
       await initializeBot(account);
       Logger.ready(`Bot ${account.username} has fully initialized and spawned`);
       
-      // Add delay between bot initializations
+      // if account is the last one, don't wait
+      if (account === accounts[accounts.length - 1]) break;
+      
+      // Else add delay between bot initializations
       await new Promise(resolve => setTimeout(resolve, 2000));
     } catch (err) {
       Logger.error(`Failed to initialize bot ${account.username}:`, err);
