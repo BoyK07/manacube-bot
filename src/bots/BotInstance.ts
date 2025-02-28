@@ -27,7 +27,9 @@ export class BotInstance {
 
       auth: "microsoft",
       hideErrors: true,
-      
+      keepAlive: true,
+      checkTimeoutInterval: 1000 * 60 * 5,
+
       onMsaCode(data) {
         Logger.warn(`Please login to Microsoft at: ${data.verification_uri}?otc=${data.user_code}`);
       },

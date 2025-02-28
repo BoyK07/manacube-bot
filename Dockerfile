@@ -3,6 +3,9 @@
 FROM oven/bun:1 AS base
 WORKDIR /usr/src/app
 
+# Create minecraft data directory that will be mounted as a volume
+RUN mkdir -p /home/bun/.minecraft
+
 # install dependencies into temp directory
 # this will cache them and speed up future builds
 FROM base AS install
@@ -31,6 +34,11 @@ COPY --from=prerelease /usr/src/app/src ./src
 COPY --from=prerelease /usr/src/app/package.json .
 COPY --from=prerelease /usr/src/app/tsconfig.json .
 
+# Create and set proper permissions for minecraft directory
+RUN mkdir -p /home/bun/.minecraft && chown -R bun:bun /home/bun/.minecraft
+
 # run the app
 USER bun
+# Define the volume for minecraft data
+VOLUME /home/bun/.minecraft
 ENTRYPOINT [ "bun", "run", "src/index.ts" ]
