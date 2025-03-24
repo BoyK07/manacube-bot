@@ -1,22 +1,24 @@
 {
-  "name": "curiomc-bot",
-  "module": "src/index.ts",
-  "type": "module",
-  "scripts": {
-    "start": "node src/index.js",
-    "dev": "node src/index.ts --watch",
-    "format": "prettier --write ."
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "prettier": "^3.5.1"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "chalk": "^5.4.1",
-    "mineflayer": "^4.26.0",
-    "uuid": "^11.1.0"
-  }
+    "name": "curiomc-bot",
+    "module": "src/index.ts",
+    "type": "module",
+    "scripts": {
+        "start": "bun src/index.js",
+        "dev": "bun src/index.ts --watch",
+        "format": "prettier --write ."
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@types/ini": "^4.1.1",
+        "prettier": "^3.5.1"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "chalk": "^5.4.1",
+        "ini": "^5.0.0",
+        "mineflayer": "^4.26.0",
+        "uuid": "^11.1.0"
+    }
 }

@@ -4,7 +4,6 @@ export interface BotConfig {
     username: string;
     version: string;
     respawn: boolean;
-    // Extend with additional configuration options (password, version, etc.)
   }
   
   export const defaultBotConfig: BotConfig = {
